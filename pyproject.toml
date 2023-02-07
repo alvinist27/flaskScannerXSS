@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "flaskscanerxss"
+version = "0.1.0"
+description = ""
+authors = ["alvinist27 <suhrobhotamov496@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "^2.2.2"
+alembic = "^1.9.2"
+pydantic = "^1.10.4"
+apscheduler = "^3.10.0"
+sqlalchemy = "^2.0.2"
+
+
+[tool.poetry.group.dev.dependencies]
+wemake-python-styleguide = "^0.17.0"
+mypy = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
