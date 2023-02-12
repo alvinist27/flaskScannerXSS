@@ -14,5 +14,40 @@ def main_page():
     return render_template('index.html')
 
 
+@app.route('/about')
+def about_page():
+    return render_template('about.html')
+
+
+@app.route('/contact')
+def contact_page():
+    return render_template('contact.html')
+
+
+@app.route('/project')
+def project_page():
+    return render_template('project.html')
+
+
+@app.route('/service')
+def service_page():
+    return render_template('service.html')
+
+
+@app.route('/team')
+def team_page():
+    return render_template('team.html')
+
+
+@app.route('/testimonial')
+def testimonial_page():
+    return render_template('testimonial.html')
+
+
+@app.errorhandler(404)
+def not_found_page(error):
+    return render_template('404.html'), 404
+
+
 if __name__ == '__main__':
     app.run()
