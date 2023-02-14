@@ -15,6 +15,8 @@ sqlalchemy = "^2.0.2"
 asyncpg = "^0.27.0"
 python-dotenv = "^0.21.1"
 psycopg2 = "^2.9.5"
+wtforms = "^3.0.1"
+flask-wtf = "^1.1.1"
 
 
 [tool.poetry.group.dev.dependencies]

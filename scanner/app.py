@@ -1,12 +1,15 @@
 import os
 
 from flask import Flask, render_template
+from flask_wtf.csrf import CSRFProtect
 
+from scanner.forms import ScanForm
 from scanner.settings import SECRET_KEY_LENGTH, STATIC_PATH, TEMPLATE_PATH
 
 app = Flask(__name__, template_folder=TEMPLATE_PATH, static_folder=STATIC_PATH)
 SECRET_KEY = os.urandom(SECRET_KEY_LENGTH)
 app.config['SECRET_KEY'] = SECRET_KEY
+CSRFProtect(app)
 
 
 @app.route('/')
@@ -49,5 +52,11 @@ def not_found_page(error):
     return render_template('404.html'), 404
 
 
+@app.route('/scan', methods=('GET', 'POST'))
+def scan_page():
+    scan_form = ScanForm()
+    return render_template('scan.html', scan_form=scan_form)
+
+
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
