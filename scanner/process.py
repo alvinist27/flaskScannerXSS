@@ -1,8 +1,8 @@
-from typing import Set, Tuple
+from typing import Set
+from urllib.parse import urljoin, urlparse
 
 import undetected_chromedriver as uc
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, urljoin
 
 
 class ScanProcess:
@@ -13,7 +13,7 @@ class ScanProcess:
         self.external_urls = set()
         self.target_url = target_url
 
-    def create_sitemap(self, url: str, max_urls: int = 100) -> None:
+    def create_sitemap(self, url: str, max_urls: int = 20) -> None:
         self.urls_count += 1
         if self.urls_count > max_urls:
             return
@@ -24,19 +24,21 @@ class ScanProcess:
     def get_links(self, url: str) -> Set[str]:
         urls = set()
         domain_name = urlparse(url).netloc
-        soup = BeautifulSoup(self.driver.get(url).page_source, 'html.parser')
+        self.driver.get(url)
+        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
         for a_tag in soup.findAll('a'):
             href = a_tag.attrs.get('href')
             if not href:
                 continue
-            href = urljoin(url, href)
-            parsed_href = urlparse(href)
+            parsed_href = urlparse(urljoin(url, href))
             href = f'{parsed_href.scheme}://{parsed_href.netloc}{parsed_href.path}'
-            if self.is_valid_url(href) and href not in self.internal_urls:
+            if domain_name not in href:
+                if href not in self.external_urls:
+                    self.external_urls.add(href)
+                continue
+            elif self.is_valid_url(href) and href not in self.internal_urls:
                 urls.add(href)
                 self.internal_urls.add(href)
-            elif domain_name not in href and href not in self.external_urls:
-                self.external_urls.add(href)
         return urls
 
     @staticmethod
