@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template
 from flask_wtf.csrf import CSRFProtect
 
 from scanner.forms import ScanForm
@@ -55,8 +55,10 @@ def not_found_page(error):
 @app.route('/scan', methods=('GET', 'POST'))
 def scan_page():
     scan_form = ScanForm()
+    if scan_form.validate_on_submit():
+        redirect('scan_process')
     return render_template('scan.html', scan_form=scan_form)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=True)

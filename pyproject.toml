@@ -17,6 +17,8 @@ python-dotenv = "^0.21.1"
 psycopg2 = "^2.9.5"
 wtforms = "^3.0.1"
 flask-wtf = "^1.1.1"
+undetected-chromedriver = "^3.4.6"
+beautifulsoup4 = "^4.11.2"
 
 
 [tool.poetry.group.dev.dependencies]
