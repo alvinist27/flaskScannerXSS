@@ -22,14 +22,15 @@ class ScanProcess:
 
     @staticmethod
     def get_form_info(form):
-        inputs = []
-        for input_field in form.find_all('input'):
-            inputs.append({
-                'name': input_field.attrs.get('name', ''),
-                'type': input_field.attrs.get('type', 'text'),
-            })
+        fields = []
+        for field_name in ('input', 'textarea'):
+            for field in form.find_all(field_name):
+                fields.append({
+                    'name': field.attrs.get('name', ''),
+                    'type': field.attrs.get('type', 'text'),
+                })
         return {
-            'inputs': inputs,
+            'fields': fields,
             'action': form.attrs.get('action', '').lower(),
             'method': form.attrs.get('method', 'get').lower(),
         }
@@ -65,14 +66,20 @@ class ScanProcess:
     def get_page_forms(self, url):
         self.driver.get(url)
         page_content = BeautifulSoup(self.driver.page_source, 'html.parser')
+        page_forms = page_content.find_all('form')
+        return page_forms
+
+    def get_page_inputs(self, url):
+        self.driver.get(url)
+        page_content = BeautifulSoup(self.driver.page_source, 'html.parser')
         return page_content.find_all('form')
 
-    def submit_form(self, form, form_info, script):
+    def submit_form(self, form_info, script):
         scan_url = urljoin(self.target_url, form_info['action'])
         data = {}
-        for form_input in form_info['inputs']:
-            if form_input['type'] in ('text', 'search') and form_input['name']:
-                data[form_input['name']] = script
+        for form_field in form_info['fields']:
+            if form_field['type'] in ('text', 'search') and form_field['name']:
+                data[form_field['name']] = script
         if form_info['method'] == 'post':
             return requests.post(scan_url, data=data)
         return requests.get(scan_url, params=data)
@@ -87,11 +94,11 @@ class ScanProcess:
         ]
         for url in self.internal_urls:
             page_forms = self.get_page_forms(url)
-            for form in page_forms:
-                form_info = self.get_form_info(form)
-                for script in scripts:
-                    submit_response = self.submit_form(form, form_info, script).content.decode()
-                    if script in submit_response:
+            for script in scripts:
+                for form in page_forms:
+                    form_info = self.get_form_info(form)
+                    submit_form_response = self.submit_form(form_info, script).content.decode()
+                    if script in submit_form_response:
                         vulnerable_urls.add(url)
                         break
         return vulnerable_urls
